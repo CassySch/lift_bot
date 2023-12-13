@@ -137,9 +137,7 @@ class Motors:
                     self.current_state = 7
             if self.current_state == 11:  # Startup
                 if pins.UP.value() != 0 or pins.DOWN.value() != 0:
-                    pins.REV.value(1)
-                    pins.FWD.value(0)
-                    self.current_state = 7
+                    self.current_state = 9
                 else:
                     self.current_state = 7
             if self.decoded_data == 'r,1':
@@ -148,6 +146,7 @@ class Motors:
             print("Current state:", self.current_state)
             print("Type", type(self.current_state))
             print("Up:", pins.UP.value())
+            conn.sendall('State:',self.current_state.encode())
     def go_right(self):
         print("Right")
         pins.AIN1.value(1)
@@ -184,4 +183,5 @@ class Motors:
         print("Stopped")
         pins.PWMA.duty(0)
         pins.PWMB.duty(0)
+
 
