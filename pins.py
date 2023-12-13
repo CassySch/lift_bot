@@ -2,6 +2,7 @@ import machine
 
 PIEZO = machine.PWM(machine.Pin(19))
 
+PIEZO.duty(0)
 #Left wheel
 AIN1 = machine.Pin(26,machine.Pin.OUT)
 AIN2 = machine.Pin(27,machine.Pin.OUT)
@@ -19,7 +20,11 @@ STBY = machine.Pin(27,machine.Pin.OUT)
 REV = machine.Pin(13,machine.Pin.OUT)
 FWD = machine.Pin(15,machine.Pin.OUT)
 
+REV.value(0)
+FWD.value(0)
+
 #Switch pins
 UP= machine.Pin(23,machine.Pin.IN, pull=machine.Pin.PULL_UP)
 DOWN = machine.Pin(12,machine.Pin.IN, pull=machine.Pin.PULL_UP)
+
 
