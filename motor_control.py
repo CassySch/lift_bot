@@ -33,7 +33,7 @@ class Motors:
         self.previous_data = ""
         self.server_socket = None  # Initialize as None
         self.current_state = 11  # startup
-
+        self.lift_state = 'UNKNOWN'
     def connect(self):
         # Use esp as access point
         ssid = 'ESP32-Router'
@@ -71,11 +71,20 @@ class Motors:
                 if Motors.continue_listening == False:
                     conn.close()  # Close the connection
                     break  # Break from the inner loop
-
+                state = str(self.current_state)
+                states = state + ',' + self.lift_state
+                conn.sendall(states.encode())
+                print("Sent state")
     def is_new_data(self):
         return self.decoded_data != self.previous_data
 
     def motor_control(self):
+            if pins.UP.value() == 0:
+                self.lift_state = 'OPEN'
+            elif pins.DOWN.value() == 0:
+                self.lift_state = 'CLOSED'
+            else:
+                self.lift_state = 'UNKNOWN'
             if self.current_state ==  1:  # Forward
                 self.go_forward()
                 if self.is_new_data():
@@ -142,11 +151,13 @@ class Motors:
                     self.current_state = 7
             if self.decoded_data == 'r,1':
                     print("Exiting")
+                    PWMA.duty(0)
+                    PWMB.duty(0)
                     Motors.continue_listening = False  # Stop looking for new connections
             print("Current state:", self.current_state)
             print("Type", type(self.current_state))
             print("Up:", pins.UP.value())
-            conn.sendall('State:',self.current_state.encode())
+            
     def go_right(self):
         print("Right")
         pins.AIN1.value(1)
@@ -183,5 +194,6 @@ class Motors:
         print("Stopped")
         pins.PWMA.duty(0)
         pins.PWMB.duty(0)
+
 
 
