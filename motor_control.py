@@ -173,8 +173,8 @@ class Motors:
         pins.AIN2.value(1)
         pins.PWMA.duty(500)
 
-        pins.BIN1.value(0)
-        pins.BIN2.value(1)
+        pins.BIN1.value(1)
+        pins.BIN2.value(0)
         pins.PWMB.duty(500)
 
     def go_forward(self):
@@ -183,14 +183,14 @@ class Motors:
         pins.AIN2.value(0)
         pins.PWMA.duty(500)
 
-        pins.BIN1.value(1)
-        pins.BIN2.value(0)
+        pins.BIN1.value(0)
+        pins.BIN2.value(1)
         pins.PWMB.duty(500)
 
     def go_left(self):
         print("Left")
-        pins.BIN1.value(1)
-        pins.BIN2.value(0)
+        pins.BIN1.value(0)
+        pins.BIN2.value(1)
         pins.PWMB.duty(500)
 
     def stop(self):
