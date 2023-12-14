@@ -34,6 +34,7 @@ class Motors:
         self.server_socket = None  # Initialize as None
         self.current_state = 11  # startup
         self.lift_state = 'UNKNOWN'
+        self.conn = None  
     def connect(self):
         # Use esp as access point
         ssid = 'ESP32-Router'
@@ -55,11 +56,11 @@ class Motors:
         # listen for a connection as long a previous connection was not terminated
         while Motors.continue_listening:
             print('Waiting for connections...')
-            conn, addr = self.server_socket.accept()
+            self.conn, addr = self.server_socket.accept()
             print('Connected by', addr)
-            conn.sendall('Hello from ESP32 Access Point!'.encode())
+            self.conn.sendall('Hello from ESP32 Access Point!'.encode())
             while True:
-                data = conn.recv(1024)
+                data = self.conn.recv(1024)
                 if not data:
                     # No more data, break from the inner loop
                     break
@@ -69,16 +70,17 @@ class Motors:
                 print('Decoded:', self.decoded_data)
                 # Close connection
                 if Motors.continue_listening == False:
-                    conn.close()  # Close the connection
+                    self.conn.close()  # Close the connection
                     break  # Break from the inner loop
-                state = str(self.current_state)
-                states = state + ',' + self.lift_state
-                conn.sendall(states.encode())
-                print("Sent state")
+                
     def is_new_data(self):
         return self.decoded_data != self.previous_data
 
     def motor_control(self):
+            state = str(self.current_state)
+            states = state + ',' + self.lift_state
+            self.conn.sendall(states.encode())
+            print("Sent state")
             if pins.UP.value() == 0:
                 self.lift_state = 'OPEN'
             elif pins.DOWN.value() == 0:
@@ -151,12 +153,13 @@ class Motors:
                     self.current_state = 7
             if self.decoded_data == 'r,1':
                     print("Exiting")
-                    PWMA.duty(0)
-                    PWMB.duty(0)
+                    pins.PWMA.duty(0)
+                    pins.PWMB.duty(0)
                     Motors.continue_listening = False  # Stop looking for new connections
             print("Current state:", self.current_state)
             print("Type", type(self.current_state))
             print("Up:", pins.UP.value())
+            print("Down", pins.DOWN.value())
             
     def go_right(self):
         print("Right")
