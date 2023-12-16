@@ -74,7 +74,8 @@ class Motors:
                 if not Motors.continue_listening:
                     self.conn.close()  # Close the connection
                     break  # Break from the inner loop
-
+            self.motor_control()
+            
     def is_new_data(self):
         return self.decoded_data != self.previous_data
 
@@ -171,6 +172,10 @@ class Motors:
         pins.PWMA.duty(500)
         pins.PWMB.duty(0)
 
+        pins.BIN1.value(1)
+        pins.BIN2.value(0)
+        pins.PWMB.duty(500)
+
     def go_backward(self):
         print("Backward")
         pins.AIN1.value(0)
@@ -197,6 +202,10 @@ class Motors:
         pins.BIN2.value(1)
         pins.PWMB.duty(500)
         pins.PWMA.duty(0)
+
+        pins.AIN1.value(0)
+        pins.AIN2.value(1)
+        pins.PWMA.duty(500)
 
     def lift_stop(self):
         print("Stopped")
