@@ -95,12 +95,12 @@ class Motors:
                 self.go_forward()
                 if self.is_new_data():
                     self.current_state = 7
-    
+
             if self.current_state == 2:  # Backward
                 self.go_backward()
                 if self.is_new_data():
                     self.current_state = 7
-    
+
             if self.current_state == 3:  # Left
                 self.go_left()
                 if self.is_new_data():
@@ -136,20 +136,16 @@ class Motors:
                 else:
                     self.current_state = 11
             if self.current_state == 8:  # Lift go Up
-                pins.REV.value(0)
-                pins.FWD.value(1)
+                self.lift_up()
                 if pins.UP.value() == 0:
                     self.current_state = 10
             if self.current_state == 9:  # Lift go down
-                pins.REV.value(1)
-                pins.FWD.value(0)
+                self.lift_down()
                 if pins.DOWN.value() == 0:
                     self.current_state = 10
             if self.current_state == 10:  # Lift motor stop
-                if pins.UP.value() == 0 or pins.DOWN.value() == 0:
-                    pins.FWD.value(0)
-                    pins.REV.value(0)
-                    self.current_state = 7
+                self.lift_stop()
+                self.current_state = 7
             if self.current_state == 11:  # Startup
                 if pins.UP.value() != 0 or pins.DOWN.value() != 0:
                     self.current_state = 9
@@ -164,7 +160,7 @@ class Motors:
             print("Type", type(self.current_state))
             print("Up:", pins.UP.value())
             print("Down", pins.DOWN.value())
-            
+
             if prev_state == self.current_state:
                 break
 
@@ -202,7 +198,19 @@ class Motors:
         pins.PWMB.duty(500)
         pins.PWMA.duty(0)
 
-    def stop(self):
+    def lift_stop(self):
         print("Stopped")
+        pins.FWD.value(0)
+        pins.REV.value(0)
+        
+    def lift_up(self):
+        pins.REV.value(0)
+        pins.FWD.value(1)
+        pins.PWMA.duty(0)
+        pins.PWMB.duty(0)
+        
+    def lift_down(self):
+        pins.REV.value(1)
+        pins.FWD.value(0)
         pins.PWMA.duty(0)
         pins.PWMB.duty(0)
