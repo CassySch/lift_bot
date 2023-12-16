@@ -93,22 +93,22 @@ class Motors:
                 self.lift_state = 'UNKNOWN'
             if self.current_state == 1:  # Forward
                 self.go_forward()
-                if self.is_new_data():
-                    self.current_state = 7
+                #if self.is_new_data():
+                self.current_state = 7
 
             if self.current_state == 2:  # Backward
                 self.go_backward()
-                if self.is_new_data():
-                    self.current_state = 7
+                #if self.is_new_data():
+                self.current_state = 7
 
             if self.current_state == 3:  # Left
                 self.go_left()
-                if self.is_new_data():
-                    self.current_state = 7
+                #if self.is_new_data():
+                self.current_state = 7
             if self.current_state == 4:  # Right
                 self.go_right()
-                if self.is_new_data():
-                    self.current_state = 7
+                #if self.is_new_data():
+                self.current_state = 7
             # case 5:  # Bacwards Right only to be added if using joy stick
             # case 6:  # Bacwards Left
             if self.current_state == 7:  # Stopped
@@ -202,13 +202,13 @@ class Motors:
         print("Stopped")
         pins.FWD.value(0)
         pins.REV.value(0)
-        
+
     def lift_up(self):
         pins.REV.value(0)
         pins.FWD.value(1)
         pins.PWMA.duty(0)
         pins.PWMB.duty(0)
-        
+
     def lift_down(self):
         pins.REV.value(1)
         pins.FWD.value(0)
