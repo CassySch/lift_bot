@@ -172,7 +172,6 @@ class Motors:
         pins.AIN1.value(1)
         pins.AIN2.value(0)
         pins.PWMA.duty(500)
-        pins.PWMB.duty(0)
 
         pins.BIN1.value(1)
         pins.BIN2.value(0)
@@ -203,7 +202,6 @@ class Motors:
         pins.BIN1.value(0)
         pins.BIN2.value(1)
         pins.PWMB.duty(500)
-        pins.PWMA.duty(0)
 
         pins.AIN1.value(0)
         pins.AIN2.value(1)
