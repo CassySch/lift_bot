@@ -85,7 +85,8 @@ class Motors:
 
     def motor_control(self):
         button_event = ""
-    
+        entering = "Entering Motor control"
+        self.conn.sendall(entering.encode())
         if self.is_new_data():
             button_event = self.current_data
             self.pevious_data = self.current_data
@@ -96,6 +97,8 @@ class Motors:
             self.lift_down()
             self.current_state = 9
         while True:
+            loop = "Motor Control Loop"
+            self.conn.sendall(loop.encode())
             prev_state = self.current_state
             state = str(self.current_state)
             states = state + ',' + self.lift_state
