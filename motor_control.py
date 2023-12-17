@@ -65,8 +65,8 @@ class Motors:
                 break
     def button_handler(self):
         data = self.conn.recv(1024)
-        if not data:
-            data = ""
+        #if not data:
+            #data = ""
         self.decoded_data = data.decode('utf-8')
         self.pevious_data = self.decoded_data
         print('Decoded:', self.decoded_data)
@@ -226,7 +226,7 @@ class Motors:
     def stop(self):
         pins.PWMA.duty(0)
         pins.PWMB.duty(0)
-        
+
     def stop_all(self):
         pins.PWMA.duty(0)
         pins.PWMB.duty(0)
