@@ -95,31 +95,31 @@ class Motors:
             elif pins.DOWN.value() == 0:
                 self.lift_state = 'CLOSED'
             else:
-                self.lift_state = 'UNKNOWN'
+                self.lift_state = 'PARTIAL'
 
             if self.current_state == 1:  # Forward
                 if self.is_new_data():
                     self.stop()
                     self.current_state = 7
 
-            if self.current_state == 2:  # Backward
+            elif self.current_state == 2:  # Backward
                 if self.is_new_data():
                     self.stop()
                     self.current_state = 7
 
-            if self.current_state == 3:  # Left
+            elif self.current_state == 3:  # Left
                 if self.is_new_data():
                     self.stop()
                     self.current_state = 7
 
-            if self.current_state == 4:  # Right
+            elif self.current_state == 4:  # Right
                 if self.is_new_data():
                     self.stop()
                     self.current_state = 7
 
             # case 5:  # Bacwards Right only to be added if using joy stick
             # case 6:  # Bacwards Left
-            if self.current_state == 7:  # Movement State
+            elif self.current_state == 7:  # Movement State
                 print("In state 7")
                 if pins.UP.value() == 0 or pins.DOWN.value() == 0:  # Lift is completely extended or closed
                     print("In state 7 ready to move")
@@ -127,19 +127,19 @@ class Motors:
                         # if self.decoded_data == 'a,0':
                         self.go_right()
                         self.current_state = 4
-                    if self.decoded_data == 'x,1':
+                    elif self.decoded_data == 'x,1':
                         # if self.decoded_data == 'x,0':
                         self.go_forward()
                         self.current_state = 1
-                    if self.decoded_data == 'b,1':
+                    elif self.decoded_data == 'b,1':
                         # if self.decoded_data == 'b,0':
                         self.go_backward()
                         self.current_state = 2
-                    if self.decoded_data == 'y,1':
+                    elif self.decoded_data == 'y,1':
                         # if self.decoded_data == 'y,0':
                         self.go_left()
                         self.current_state = 3
-                    if self.decoded_data == 'zr,1':
+                    elif self.decoded_data == 'zr,1':
                         # if self.decoded_data == 'zr,1':
                         if pins.DOWN.value() != 0:
                             self.lift_down()
@@ -148,12 +148,12 @@ class Motors:
                             self.lift_up()
                             self.current_state = 8
 
-            if self.current_state == 8:  # Lift going Up
+            elif self.current_state == 8:  # Lift going Up
                 if pins.UP.value() == 0:
                     self.lift_stop()
                     self.current_state = 7
 
-            if self.current_state == 9:  # Lift going down
+            elif self.current_state == 9:  # Lift going down
                 if pins.DOWN.value() == 0:
                     self.lift_stop()
                     self.current_state = 7
