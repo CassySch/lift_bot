@@ -32,6 +32,7 @@ class Motors:
         self.pins.PWMB.freq(freq)
         self.decoded_data = ""
         self.previous_data = ""
+        self.current_data = ""
         self.server_socket = None  # Initialize as None
         self.current_state = 7  # startup
         self.lift_state = 'UNKNOWN'
@@ -64,17 +65,33 @@ class Motors:
             if not self.continue_listening:
                 break
     def button_handler(self):
+        print("Handler called")
         data = self.conn.recv(1024)
         #if not data:
             #data = ""
+        print("Old:", self.current_data)
+        print("New:", self.previous_data)
         self.decoded_data = data.decode('utf-8')
-        self.pevious_data = self.decoded_data
+        self.previous_data = self.current_data
+        self.current_data = self.decoded_data
         print('Decoded:', self.decoded_data)
+        print("Old:", self.current_data)
+        print("New:", self.previous_data)
+        if not self.is_new_data():
+            print("Handler exit")
 
     def is_new_data(self):
-        return self.decoded_data != self.previous_data
+        return self.current_data != self.previous_data
 
     def motor_control(self):
+        button_event = ""
+    
+        if self.is_new_data():
+            button_event = self.current_data
+            self.pevious_data = self.current_data
+            
+        move_event = button_event == 'x,1' or button_event == 'y,1' or button_event == 'a,1' or button_event == 'b,1'
+        
         if not (pins.UP.value() == 0 and pins.DOWN.value() == 0):
             self.lift_down()
             self.current_state = 9
@@ -93,7 +110,7 @@ class Motors:
                 self.lift_state = 'PARTIAL'
 
             if self.current_state == 1:  # Forward
-                if self.is_new_data():
+                if move_event:
                     pins.PIEZO.duty(500)
                     pins.PIEZO.freq(50)
                     self.stop()
@@ -102,60 +119,72 @@ class Motors:
                     pins.PIEZO.duty(0)
 
             elif self.current_state == 2:  # Backward
-                if self.is_new_data():
+                if move_event:
                     pins.PIEZO.duty(500)
                     pins.PIEZO.freq(50)
                     self.stop()
                     self.current_state = 7
                 else:
                     pins.PIEZO.duty(0)
-                    
+
             elif self.current_state == 3:  # Left
-                if self.is_new_data():
+                if move_event:
                     pins.PIEZO.duty(500)
                     pins.PIEZO.freq(50)
                     self.stop()
                     self.current_state = 7
                 else:
                     pins.PIEZO.duty(0)
-                    
+
             elif self.current_state == 4:  # Right
-                if self.is_new_data():
+                if move_event:
                     pins.PIEZO.duty(500)
                     pins.PIEZO.freq(50)
                     self.stop()
                     self.current_state = 7
                 else:
                     pins.PIEZO.duty(0)
-                    
+
             # case 5:  # Bacwards Right only to be added if using joy stick
             # case 6:  # Bacwards Left
             elif self.current_state == 7:  # Movement State
                 print("In state 7")
                 if pins.UP.value() == 0 or pins.DOWN.value() == 0:  # Lift is completely extended or closed
                     print("In state 7 ready to move")
-                    if self.decoded_data == 'a,1':
+                    if button_event == 'a,1':
                         # if self.decoded_data == 'a,0':
+                        button_event = ""
+                        move_event = False
                         self.go_right()
                         self.current_state = 4
-                    elif self.decoded_data == 'x,1':
+                    elif button_event== 'x,1':
                         # if self.decoded_data == 'x,0':
+                        button_event = ""
+                        move_event = False
                         self.go_forward()
                         self.current_state = 1
-                    elif self.decoded_data == 'b,1':
+                    elif button_event == 'b,1':
                         # if self.decoded_data == 'b,0':
+                        button_event = ""
+                        move_event = False
                         self.go_backward()
                         self.current_state = 2
-                    elif self.decoded_data == 'y,1':
+                    elif button_event == 'y,1':
                         # if self.decoded_data == 'y,0':
+                        button_event = ""
+                        move_event = False
                         self.go_left()
                         self.current_state = 3
-                    elif self.decoded_data == 'zr,1':
+                    elif button_event == 'zr,1':
                         # if self.decoded_data == 'zr,1':
                         if pins.DOWN.value() != 0:
+                            button_event = ""
+                            move_event = False
                             self.lift_down()
                             self.current_state = 9
                         elif pins.UP.value() != 0:
+                            button_event = ""
+                            move_event = False
                             self.lift_up()
                             self.current_state = 8
 
@@ -169,7 +198,7 @@ class Motors:
                     self.lift_stop()
                     self.current_state = 7
 
-            if self.decoded_data == 'r,1':
+            if button_event == 'r,1':
                 print("Exiting")
                 self.stop_all()
                 self.conn.close()  # Close the connection
@@ -178,6 +207,8 @@ class Motors:
             print("Type", type(self.current_state))
             print("Up:", pins.UP.value())
             print("Down", pins.DOWN.value())
+            print("Old:", self.current_data)
+            print("New:", self.previous_data)
 
             if prev_state == self.current_state:
                 break
