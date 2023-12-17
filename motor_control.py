@@ -171,41 +171,41 @@ class Motors:
         print("Right")
         pins.AIN1.value(1)
         pins.AIN2.value(0)
-        pins.PWMA.duty(500)
+        pins.PWMA.duty(750)
 
         pins.BIN1.value(1)
         pins.BIN2.value(0)
-        pins.PWMB.duty(500)
+        pins.PWMB.duty(750)
 
     def go_backward(self):
         print("Backward")
         pins.AIN1.value(0)
         pins.AIN2.value(1)
-        pins.PWMA.duty(500)
+        pins.PWMA.duty(750)
 
         pins.BIN1.value(1)
         pins.BIN2.value(0)
-        pins.PWMB.duty(500)
+        pins.PWMB.duty(750)
 
     def go_forward(self):
         print("Forward")
         pins.AIN1.value(1)
         pins.AIN2.value(0)
-        pins.PWMA.duty(500)
+        pins.PWMA.duty(750)
 
         pins.BIN1.value(0)
         pins.BIN2.value(1)
-        pins.PWMB.duty(500)
+        pins.PWMB.duty(750)
 
     def go_left(self):
         print("Left")
         pins.BIN1.value(0)
         pins.BIN2.value(1)
-        pins.PWMB.duty(500)
+        pins.PWMB.duty(750)
 
         pins.AIN1.value(0)
         pins.AIN2.value(1)
-        pins.PWMA.duty(500)
+        pins.PWMA.duty(750)
 
     def lift_stop(self):
         print("Stopped")
