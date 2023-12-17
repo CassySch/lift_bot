@@ -75,7 +75,7 @@ class Motors:
                     self.conn.close()  # Close the connection
                     break  # Break from the inner loop
             self.motor_control()
-            
+
     def is_new_data(self):
         return self.decoded_data != self.previous_data
 
@@ -86,77 +86,87 @@ class Motors:
             states = state + ',' + self.lift_state
             self.conn.sendall(states.encode())
             print("Sent state")
+
             if pins.UP.value() == 0:
                 self.lift_state = 'OPEN'
             elif pins.DOWN.value() == 0:
                 self.lift_state = 'CLOSED'
             else:
                 self.lift_state = 'UNKNOWN'
+
             if self.current_state == 1:  # Forward
-                self.go_forward()
-                #if self.is_new_data():
-                self.current_state = 7
+                if self.is_new_data():
+                    self.stop()
+                    self.current_state = 7
 
             if self.current_state == 2:  # Backward
-                self.go_backward()
-                #if self.is_new_data():
-                self.current_state = 7
+                if self.is_new_data():
+                    self.stop()
+                    self.current_state = 7
 
             if self.current_state == 3:  # Left
-                self.go_left()
-                #if self.is_new_data():
-                self.current_state = 7
+                if self.is_new_data():
+                    self.stop()
+                    self.current_state = 7
+
             if self.current_state == 4:  # Right
-                self.go_right()
-                #if self.is_new_data():
-                self.current_state = 7
+                if self.is_new_data():
+                    self.stop()
+                    self.current_state = 7
+
             # case 5:  # Bacwards Right only to be added if using joy stick
             # case 6:  # Bacwards Left
-            if self.current_state == 7:  # Stopped
+            if self.current_state == 7:  # Movement State
                 print("In state 7")
                 if pins.UP.value() == 0 or pins.DOWN.value() == 0:  # Lift is completely extended or closed
                     print("In state 7 ready to move")
                     if self.decoded_data == 'a,1':
                         # if self.decoded_data == 'a,0':
+                        self.go_right()
                         self.current_state = 4
                     if self.decoded_data == 'x,1':
                         # if self.decoded_data == 'x,0':
+                        self.go_forward()
                         self.current_state = 1
                     if self.decoded_data == 'b,1':
                         # if self.decoded_data == 'b,0':
+                        self.go_backward()
                         self.current_state = 2
                     if self.decoded_data == 'y,1':
                         # if self.decoded_data == 'y,0':
+                        self.go_left()
                         self.current_state = 3
                     if self.decoded_data == 'zr,1':
                         # if self.decoded_data == 'zr,1':
-                        if pins.UP.value() == 0:
+                        if pins.DOWN.value() != 0:
+                            self.lift_down()
                             self.current_state = 9
-                        elif pins.DOWN.value() == 0:
+                        elif pins.UP.value() != 0:
+                            self.lift_up()
                             self.current_state = 8
-                else:
-                    self.current_state = 11
-            if self.current_state == 8:  # Lift go Up
-                self.lift_up()
+
+            if self.current_state == 8:  # Lift going Up
                 if pins.UP.value() == 0:
-                    self.current_state = 10
-            if self.current_state == 9:  # Lift go down
-                self.lift_down()
+                    self.lift_stop()
+                    self.current_state = 7
+
+            if self.current_state == 9:  # Lift going down
                 if pins.DOWN.value() == 0:
-                    self.current_state = 10
-            if self.current_state == 10:  # Lift motor stop
-                self.lift_stop()
-                self.current_state = 7
+                    self.lift_stop()
+                    self.current_state = 7
+
             if self.current_state == 11:  # Startup
-                if pins.UP.value() != 0 or pins.DOWN.value() != 0:
+                if not (pins.UP.value() == 0 and pins.DOWN.value() == 0):
                     self.current_state = 9
                 else:
                     self.current_state = 7
+
             if self.decoded_data == 'r,1':
                 print("Exiting")
                 pins.PWMA.duty(0)
                 pins.PWMB.duty(0)
                 Motors.continue_listening = False  # Stop looking for new connections
+
             print("Current state:", self.current_state)
             print("Type", type(self.current_state))
             print("Up:", pins.UP.value())
@@ -221,5 +231,9 @@ class Motors:
     def lift_down(self):
         pins.REV.value(1)
         pins.FWD.value(0)
+        pins.PWMA.duty(0)
+        pins.PWMB.duty(0)
+        
+    def stop(self):
         pins.PWMA.duty(0)
         pins.PWMB.duty(0)
