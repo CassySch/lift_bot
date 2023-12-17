@@ -155,8 +155,7 @@ class Motors:
 
             if self.decoded_data == 'r,1':
                 print("Exiting")
-                pins.PWMA.duty(0)
-                pins.PWMB.duty(0)
+                self.stop_all()
                 self.conn.close()  # Close the connection
 
             print("Current state:", self.current_state)
@@ -227,4 +226,9 @@ class Motors:
     def stop(self):
         pins.PWMA.duty(0)
         pins.PWMB.duty(0)
-
+        
+    def stop_all(self):
+        pins.PWMA.duty(0)
+        pins.PWMB.duty(0)
+        pins.FWD.value(0)
+        pins.REV.value(0)
