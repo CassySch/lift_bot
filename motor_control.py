@@ -33,7 +33,7 @@ class Motors:
         self.decoded_data = ""
         self.previous_data = ""
         self.server_socket = None  # Initialize as None
-        self.current_state = 11  # startup
+        self.current_state = 7  # startup
         self.lift_state = 'UNKNOWN'
         self.conn = None
 
@@ -80,6 +80,8 @@ class Motors:
         return self.decoded_data != self.previous_data
 
     def motor_control(self):
+        if not (pins.UP.value() == 0 and pins.DOWN.value() == 0):
+            self.current_state = 9
         while True:
             prev_state = self.current_state
             state = str(self.current_state)
@@ -155,12 +157,6 @@ class Motors:
                     self.lift_stop()
                     self.current_state = 7
 
-            if self.current_state == 11:  # Startup
-                if not (pins.UP.value() == 0 and pins.DOWN.value() == 0):
-                    self.current_state = 9
-                else:
-                    self.current_state = 7
-
             if self.decoded_data == 'r,1':
                 print("Exiting")
                 pins.PWMA.duty(0)
@@ -233,7 +229,7 @@ class Motors:
         pins.FWD.value(0)
         pins.PWMA.duty(0)
         pins.PWMB.duty(0)
-        
+
     def stop(self):
         pins.PWMA.duty(0)
         pins.PWMB.duty(0)
