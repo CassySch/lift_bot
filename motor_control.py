@@ -81,6 +81,7 @@ class Motors:
 
     def motor_control(self):
         if not (pins.UP.value() == 0 and pins.DOWN.value() == 0):
+            self.lift_down()
             self.current_state = 9
         while True:
             prev_state = self.current_state
