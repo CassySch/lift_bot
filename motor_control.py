@@ -94,21 +94,29 @@ class Motors:
 
             if self.current_state == 1:  # Forward
                 if self.is_new_data():
+                    pins.PIEZO.duty(500)
+                    pins.PIEZO.freq(50)
                     self.stop()
                     self.current_state = 7
 
             elif self.current_state == 2:  # Backward
                 if self.is_new_data():
+                    pins.PIEZO.duty(500)
+                    pins.PIEZO.freq(50)
                     self.stop()
                     self.current_state = 7
 
             elif self.current_state == 3:  # Left
                 if self.is_new_data():
+                    pins.PIEZO.duty(500)
+                    pins.PIEZO.freq(50)
                     self.stop()
                     self.current_state = 7
 
             elif self.current_state == 4:  # Right
                 if self.is_new_data():
+                    pins.PIEZO.duty(500)
+                    pins.PIEZO.freq(50)
                     self.stop()
                     self.current_state = 7
 
