@@ -36,6 +36,7 @@ class Motors:
         self.current_state = 7  # startup
         self.lift_state = 'UNKNOWN'
         self.conn = None
+        self.continue_listening = True
 
     def connect(self):
         # Use esp as access point
@@ -52,29 +53,23 @@ class Motors:
         self.server_socket.bind(('', 12345))
         self.server_socket.listen(1)
 
-        Motors.continue_listening = True
-
-    def button_handler(self):
         # listen for a connection as long a previous connection was not terminated
-        while Motors.continue_listening:
+        while self.continue_listening:
             print('Waiting for connections...')
             self.conn, addr = self.server_socket.accept()
             print('Connected by', addr)
             self.conn.sendall('Hello from ESP32 Access Point!'.encode())
-            while True:
-                data = self.conn.recv(1024)
-                if not data:
-                    # No more data, break from the inner loop
-                    break
-                self.decoded_data = data.decode('utf-8')
-                self.pevious_data = self.decoded_data
-                self.motor_control()
-                print('Decoded:', self.decoded_data)
-                # Close connection
-                if not Motors.continue_listening:
-                    self.conn.close()  # Close the connection
-                    break  # Break from the inner loop
-            self.motor_control()
+            self.continue_listening = False
+            # Close connection
+            if not self.continue_listening:
+                break
+    def button_handler(self):
+        data = self.conn.recv(1024)
+        if not data:
+            data = ""
+        self.decoded_data = data.decode('utf-8')
+        self.pevious_data = self.decoded_data
+        print('Decoded:', self.decoded_data)
 
     def is_new_data(self):
         return self.decoded_data != self.previous_data
@@ -162,7 +157,7 @@ class Motors:
                 print("Exiting")
                 pins.PWMA.duty(0)
                 pins.PWMB.duty(0)
-                Motors.continue_listening = False  # Stop looking for new connections
+                self.conn.close()  # Close the connection
 
             print("Current state:", self.current_state)
             print("Type", type(self.current_state))
@@ -234,3 +229,4 @@ class Motors:
     def stop(self):
         pins.PWMA.duty(0)
         pins.PWMB.duty(0)
+
