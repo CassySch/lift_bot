@@ -81,7 +81,7 @@ class Motors:
         motor_message = "Entering Motor control"
         motor_tag = "motor"
         entering = f"{motor_tag},{motor_message}"
-        self.client_socket.sendall(entering.encode())
+#         self.client_socket.sendall(entering.encode())
         if self.is_new_data():
             button_event = self.current_data
             self.previous_data = self.current_data
@@ -101,6 +101,7 @@ class Motors:
             state = str(self.current_state)
             machine_state_tag = "machine"
             machine = f"{machine_state_tag},{state}"
+            self.client_socket.sendall(machine.encode())
             
             lift_state_str = self.lift_state
             lift_state_tag = "stateLf"
