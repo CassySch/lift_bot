@@ -72,7 +72,7 @@ class Motors:
                 else:
                     raise
 
-
+        self.motor_control()
            
             
     def is_new_data(self):
