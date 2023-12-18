@@ -123,7 +123,7 @@ class Motors:
         lift_state_str = self.lift_state
         lift_state_tag = "stateLf"
         lift = f"{lift_state_tag},{lift_state_str}"
-        self.client_socket.sendall(lift_state_tag.encode())
+        self.client_socket.sendall(lift.encode())
 
 
         print("Sent state")
