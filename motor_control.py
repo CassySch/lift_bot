@@ -72,8 +72,6 @@ class Motors:
                 else:
                     raise
 
-        self.motor_control()
-           
             
     def is_new_data(self):
         return self.current_data != self.previous_data
@@ -164,37 +162,37 @@ class Motors:
                     print("In state 7 ready to move")
                     if button_event == 'a,1':
                         # if self.decoded_data == 'a,0':
-                        button_event = ""
+                        #button_event = ""
                         move_event = False
                         self.go_right()
                         self.current_state = 4
                     elif button_event== 'x,1':
                         # if self.decoded_data == 'x,0':
-                        button_event = ""
+                        #button_event = ""
                         move_event = False
                         self.go_forward()
                         self.current_state = 1
                     elif button_event == 'b,1':
                         # if self.decoded_data == 'b,0':
-                        button_event = ""
+                        #button_event = ""
                         move_event = False
                         self.go_backward()
                         self.current_state = 2
                     elif button_event == 'y,1':
                         # if self.decoded_data == 'y,0':
-                        button_event = ""
+                        #button_event = ""
                         move_event = False
                         self.go_left()
                         self.current_state = 3
                     elif button_event == 'zr,1':
                         # if self.decoded_data == 'zr,1':
                         if pins.DOWN.value() != 0:
-                            button_event = ""
+                            #button_event = ""
                             move_event = False
                             self.lift_down()
                             self.current_state = 9
                         elif pins.UP.value() != 0:
-                            button_event = ""
+                            #button_event = ""
                             move_event = False
                             self.lift_up()
                             self.current_state = 8
