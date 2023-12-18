@@ -36,6 +36,9 @@ class Motors:
 
         self.pins.PWMA.freq(freq)
         self.pins.PWMB.freq(freq)
+        
+        self.pins.REV.value(0)
+        self.pins.FWD.value(0)
         self.decoded_data = ""
         self.previous_data = ""
         self.current_data = ""
