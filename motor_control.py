@@ -4,6 +4,23 @@ import time
 import pins
 import select
 
+
+EVENT_DISCONNECT = 'r,1'
+EVENT_LEFT = 'y,1'
+EVENT_BACKWARD = 'b,1'
+EVENT_FORWARD = 'x,1'
+EVENT_RIGHT = 'a,1'
+EVENT_LIFT = 'zr,1'
+
+STATE_FORWARD = 1
+STATE_BACKWARD = 2
+STATE_LEFT = 3
+STATE_RIGHT = 4
+STATE_IDLE = 7
+STATE_DOWN = 9
+STATE_UP = 8
+
+
 class Motors:
     def __init__(self, duty, freq):
         # Constructor, called when an object is created
@@ -45,7 +62,6 @@ class Motors:
             print('Connected by', addr)
             self.client_socket.sendall('Hello from ESP32 Access Point!'.encode())
             self.continue_listening = False
-       
 
     def button_handler(self):
         while True:
@@ -72,7 +88,6 @@ class Motors:
                 else:
                     raise
 
-            
     def is_new_data(self):
         return self.current_data != self.previous_data
 
@@ -81,156 +96,126 @@ class Motors:
         motor_message = "Entering Motor control"
         motor_tag = "motor"
         entering = f"{motor_tag},{motor_message}"
-#         self.client_socket.sendall(entering.encode())
+        #         self.client_socket.sendall(entering.encode())
         if self.is_new_data():
             button_event = self.current_data
             self.previous_data = self.current_data
-            
-        move_event = button_event == 'x,1' or button_event == 'y,1' or button_event == 'a,1' or button_event == 'b,1'
-        
-        if not (pins.UP.value() == 0 and pins.DOWN.value() == 0):
-            self.lift_down()
-            self.current_state = 9
-        while True:
-            loop_message = "Motor Control Loop"
-            loop_tag = "loop"
-            loop = f"{loop_tag},{loop_message}"
-            
-            prev_state = self.current_state
-            
-            state = str(self.current_state)
-            machine_state_tag = "machine"
-            machine = f"{machine_state_tag},{state}"
-            self.client_socket.sendall(machine.encode())
-            
-            lift_state_str = self.lift_state
-            lift_state_tag = "stateLf"
-            lift = f"{lift_state_tag},{lift_state_str}"
-            
-            combined_data = f"{loop_tag},{loop_message};{machine_state_tag},{state};{lift_state_tag},{lift_state_str}"
-            #self.client_socket.sendall(combined_data.encode())
-            
-            print("Sent state")
 
-            if pins.UP.value() == 0:
-                self.lift_state = 'OPEN'
-            elif pins.DOWN.value() == 0:
-                self.lift_state = 'CLOSED'
-            else:
-                self.lift_state = 'PARTIAL'
-
-            if self.current_state == 1:  # Forward
-                if move_event:
-                    if not move_event == 'x,1'
-                        pins.PIEZO.duty(500)
-                        pins.PIEZO.freq(50)
-                        self.stop()
-                        self.current_state = 7
-                else:
-                    pins.PIEZO.duty(0)
-
-            elif self.current_state == 2:  # Backward
-                if move_event:
-                    if not move_event == 'b,1'
-                        pins.PIEZO.duty(500)
-                        pins.PIEZO.freq(50)
-                        self.stop()
-                        self.current_state = 7
-                else:
-                    pins.PIEZO.duty(0)
-
-            elif self.current_state == 3:  # Left
-                if move_event:
-                    if not move_event == 'y,1'
-                        pins.PIEZO.duty(500)
-                        pins.PIEZO.freq(50)
-                        self.stop()
-                        self.current_state = 7
-                else:
-                    pins.PIEZO.duty(0)
-
-            elif self.current_state == 4:  # Right
-                if move_event:
-                    if not move_event == 'a,1'
-                        pins.PIEZO.duty(500)
-                        pins.PIEZO.freq(50)
-                        self.stop()
-                        self.current_state = 7
-                else:
-                    pins.PIEZO.duty(0)
-
-            # case 5:  # Bacwards Right only to be added if using joy stick
-            # case 6:  # Bacwards Left
-            elif self.current_state == 7:  # Movement State
-                print("In state 7")
-                if pins.UP.value() == 0 or pins.DOWN.value() == 0:  # Lift is completely extended or closed
-                    print("In state 7 ready to move")
-                    if button_event == 'a,1':
-                        # if self.decoded_data == 'a,0':
-                        button_event = ""
-                        move_event = False
-                        self.go_right()
-                        self.current_state = 4
-                    elif button_event== 'x,1':
-                        # if self.decoded_data == 'x,0':
-                        button_event = ""
-                        move_event = False
-                        self.go_forward()
-                        self.current_state = 1
-                    elif button_event == 'b,1':
-                        # if self.decoded_data == 'b,0':
-                        button_event = ""
-                        move_event = False
-                        self.go_backward()
-                        self.current_state = 2
-                    elif button_event == 'y,1':
-                        # if self.decoded_data == 'y,0':
-                        button_event = ""
-                        move_event = False
-                        self.go_left()
-                        self.current_state = 3
-                    elif button_event == 'zr,1':
-                        # if self.decoded_data == 'zr,1':
-                        if pins.DOWN.value() != 0:
-                            button_event = ""
-                            move_event = False
-                            self.lift_down()
-                            self.current_state = 9
-                        elif pins.UP.value() != 0:
-                            button_event = ""
-                            move_event = False
-                            self.lift_up()
-                            self.current_state = 8
-                    if button_event == 'r,1':
-                        print("Exiting")
-                        self.stop_all()
-                        self.client_socket.close()  # Close the client socket
-
-            elif self.current_state == 8:  # Lift going Up
-                if pins.UP.value() == 0:
-                    self.lift_stop()
-                    self.current_state = 7
-
-            elif self.current_state == 9:  # Lift going down
-                if pins.DOWN.value() == 0:
-                    self.lift_stop()
-                    self.current_state = 7
-
-            if button_event == 'r,1':
+            if button_event == EVENT_DISCONNECT:
                 print("Exiting")
                 self.stop_all()
                 self.client_socket.close()  # Close the client socket
+                return
 
-            print("Current state:", self.current_state)
-            print("Type", type(self.current_state))
-            print("Up:", pins.UP.value())
-            print("Down", pins.DOWN.value())
-            print("Old:", self.current_data)
-            print("New:", self.previous_data)
+        move_event = button_event == EVENT_FORWARD or button_event == EVENT_LEFT or button_event == EVENT_RIGHT or button_event == EVENT_BACKWARD
 
-            if prev_state == self.current_state:
-                break
-            
+        loop_message = "Motor Control Loop"
+        loop_tag = "loop"
+        loop = f"{loop_tag},{loop_message}"
+
+        state = str(self.current_state)
+        machine_state_tag = "machine"
+        machine = f"{machine_state_tag},{state}"
+        self.client_socket.sendall(machine.encode())
+
+        lift_state_str = self.lift_state
+        lift_state_tag = "stateLf"
+        lift = f"{lift_state_tag},{lift_state_str}"
+
+        combined_data = f"{loop_tag},{loop_message};{machine_state_tag},{state};{lift_state_tag},{lift_state_str}"
+        # self.client_socket.sendall(combined_data.encode())
+
+        print("Sent state")
+
+        if pins.UP.value() == 0:
+            self.lift_state = 'OPEN'
+        elif pins.DOWN.value() == 0:
+            self.lift_state = 'CLOSED'
+        else:
+            self.lift_state = 'PARTIAL'
+
+        if self.current_state == STATE_FORWARD:
+            if move_event and not move_event == EVENT_FORWARD:
+                self.go_idle()
+            else:
+                self.go_continue_move()
+
+        elif self.current_state == STATE_BACKWARD:
+            if move_event and not move_event == EVENT_BACKWARD:
+                self.go_idle()
+            else:
+                self.go_continue_move()
+
+        elif self.current_state == STATE_LEFT:
+            if move_event and not move_event == EVENT_LEFT:
+                self.go_idle()
+            else:
+                self.go_continue_move()
+
+        elif self.current_state == STATE_RIGHT:
+            if move_event and not move_event == EVENT_RIGHT:
+                self.go_idle()
+            else:
+                self.go_continue_move()
+
+        # case 5:  # Backwards Right only to be added if using joy stick
+        # case 6:  # Backwards Left
+        elif self.current_state == STATE_IDLE:
+            print("In state 7")
+            if pins.UP.value() == 0 or pins.DOWN.value() == 0:  # Lift is completely extended or closed
+                print("In state 7 ready to move")
+                if button_event == EVENT_RIGHT:
+                    # if self.decoded_data == 'a,0':
+                    self.go_right()
+                    self.current_state = STATE_RIGHT
+                elif button_event == EVENT_FORWARD:
+                    # if self.decoded_data == 'x,0':
+                    self.go_forward()
+                    self.current_state = STATE_FORWARD
+                elif button_event == EVENT_BACKWARD:
+                    # if self.decoded_data == 'b,0':
+                    self.go_backward()
+                    self.current_state = STATE_BACKWARD
+                elif button_event == EVENT_LEFT:
+                    # if self.decoded_data == 'y,0':
+                    self.go_left()
+                    self.current_state = STATE_LEFT
+                elif button_event == EVENT_LIFT:
+                    # if self.decoded_data == 'zr,1':
+                    if pins.DOWN.value() != 0:
+                        self.lift_down()
+                        self.current_state = STATE_DOWN
+                    elif pins.UP.value() != 0:
+                        self.lift_up()
+                        self.current_state = STATE_UP
+
+        elif self.current_state == STATE_UP:
+            if pins.UP.value() == 0:
+                self.lift_stop()
+                self.current_state = STATE_IDLE
+
+        elif self.current_state == STATE_DOWN:
+            if pins.DOWN.value() == 0:
+                self.lift_stop()
+                self.current_state = STATE_IDLE
+
+        print("Current state:", self.current_state)
+        print("Up:", pins.UP.value())
+        print("Down", pins.DOWN.value())
+        print("Old:", self.current_data)
+        print("New:", self.previous_data)
+
+    def go_continue_move(self):
+        # pins.PIEZO.duty(0)
+        return
+
+    def go_idle(self):
+        # pins.PIEZO.duty(500)
+        # pins.PIEZO.freq(50)
+        self.stop()
+        self.current_state = STATE_IDLE
+        return
+
     def go_right(self):
         print("Right")
         pins.AIN1.value(1)
@@ -297,4 +282,3 @@ class Motors:
         pins.PWMB.duty(0)
         pins.FWD.value(0)
         pins.REV.value(0)
-
