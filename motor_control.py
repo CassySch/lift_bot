@@ -113,7 +113,10 @@ class Motors:
                 self.client_socket.close()  # Close the client socket
                 return
 
-        move_event = button_event == EVENT_FORWARD or button_event == EVENT_LEFT or button_event == EVENT_RIGHT or button_event == EVENT_BACKWARD
+        move_event = (button_event == EVENT_FORWARD or button_event == EVENT_LEFT or button_event == EVENT_RIGHT 
+                      or button_event == EVENT_BACKWARD or button_event == EVENT_FORWARD_RELEASE 
+                      or button_event == EVENT_LEFT_RELEASE or button_event == EVENT_RIGHT_RELEASE 
+                      or button_event == EVENT_BACKWARD_RELEASE)
 
         loop_message = "Motor Control Loop"
         loop_tag = "loop"
@@ -141,25 +144,25 @@ class Motors:
             self.lift_state = 'PARTIAL'
 
         if self.current_state == STATE_FORWARD:
-            if move_event and move_event == EVENT_FORWARD_RELEASE:
+            if move_event and not move_event == EVENT_FORWARD:
                 self.go_idle()
             else:
                 self.go_continue_move()
 
         elif self.current_state == STATE_BACKWARD:
-            if move_event and move_event == EVENT_BACKWARD_RELEASE:
+            if move_event and not move_event == EVENT_BACKWARD:
                 self.go_idle()
             else:
                 self.go_continue_move()
 
         elif self.current_state == STATE_LEFT:
-            if move_event and move_event == EVENT_LEFT_RELEASE:
+            if move_event and not move_event == EVENT_LEFT:
                 self.go_idle()
             else:
                 self.go_continue_move()
 
         elif self.current_state == STATE_RIGHT:
-            if move_event and move_event == EVENT_RIGHT_RELEASE:
+            if move_event and not move_event == EVENT_RIGHT:
                 self.go_idle()
             else:
                 self.go_continue_move()
