@@ -128,9 +128,9 @@ class Motors:
 
         print("Sent state")
 
-        if pins.UP.value() == 0:
+        if pins.TOP.value() == 0:
             self.lift_state = 'OPEN'
-        elif pins.DOWN.value() == 0:
+        elif pins.BOTTOM.value() == 0:
             self.lift_state = 'CLOSED'
         else:
             self.lift_state = 'PARTIAL'
@@ -163,7 +163,7 @@ class Motors:
         # case 6:  # Backwards Left
         elif self.current_state == STATE_IDLE:
             print("In state 7")
-            if pins.UP.value() == 0 or pins.DOWN.value() == 0:  # Lift is completely extended or closed
+            if pins.TOP.value() == 0 or pins.BOTTOM.value() == 0:  # Lift is completely extended or closed
                 print("In state 7 ready to move")
                 if button_event == EVENT_RIGHT:
                     # if self.decoded_data == 'a,0':
@@ -183,26 +183,26 @@ class Motors:
                     self.current_state = STATE_LEFT
                 elif button_event == EVENT_LIFT:
                     # if self.decoded_data == 'zr,1':
-                    if pins.DOWN.value() != 0:
+                    if pins.BOTTOM.value() != 0:
                         self.lift_down()
                         self.current_state = STATE_DOWN
-                    elif pins.UP.value() != 0:
+                    elif pins.TOP.value() != 0:
                         self.lift_up()
                         self.current_state = STATE_UP
 
         elif self.current_state == STATE_UP:
-            if pins.UP.value() == 0:
+            if pins.TOP.value() == 0:
                 self.lift_stop()
                 self.current_state = STATE_IDLE
 
         elif self.current_state == STATE_DOWN:
-            if pins.DOWN.value() == 0:
+            if pins.BOTTOM.value() == 0:
                 self.lift_stop()
                 self.current_state = STATE_IDLE
 
         print("Current state:", self.current_state)
-        print("Up:", pins.UP.value())
-        print("Down", pins.DOWN.value())
+        print("Up:", pins.TOP.value())
+        print("Down", pins.BOTTOM.value())
         print("Old:", self.current_data)
         print("New:", self.previous_data)
 
