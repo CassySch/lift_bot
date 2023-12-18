@@ -121,37 +121,41 @@ class Motors:
 
             if self.current_state == 1:  # Forward
                 if move_event:
-                    pins.PIEZO.duty(500)
-                    pins.PIEZO.freq(50)
-                    #self.stop()
-                    self.current_state = 7
+                    if not move_event == 'x,1'
+                        pins.PIEZO.duty(500)
+                        pins.PIEZO.freq(50)
+                        self.stop()
+                        self.current_state = 7
                 else:
                     pins.PIEZO.duty(0)
 
             elif self.current_state == 2:  # Backward
                 if move_event:
-                    pins.PIEZO.duty(500)
-                    pins.PIEZO.freq(50)
-                    #self.stop()
-                    self.current_state = 7
+                    if not move_event == 'b,1'
+                        pins.PIEZO.duty(500)
+                        pins.PIEZO.freq(50)
+                        self.stop()
+                        self.current_state = 7
                 else:
                     pins.PIEZO.duty(0)
 
             elif self.current_state == 3:  # Left
                 if move_event:
-                    pins.PIEZO.duty(500)
-                    pins.PIEZO.freq(50)
-                    #self.stop()
-                    self.current_state = 7
+                    if not move_event == 'y,1'
+                        pins.PIEZO.duty(500)
+                        pins.PIEZO.freq(50)
+                        self.stop()
+                        self.current_state = 7
                 else:
                     pins.PIEZO.duty(0)
 
             elif self.current_state == 4:  # Right
                 if move_event:
-                    pins.PIEZO.duty(500)
-                    pins.PIEZO.freq(50)
-                    #self.stop()
-                    self.current_state = 7
+                    if not move_event == 'a,1'
+                        pins.PIEZO.duty(500)
+                        pins.PIEZO.freq(50)
+                        self.stop()
+                        self.current_state = 7
                 else:
                     pins.PIEZO.duty(0)
 
