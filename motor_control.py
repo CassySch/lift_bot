@@ -1,6 +1,5 @@
 import network
 import usocket as socket
-import time
 import pins
 import select
 
@@ -11,6 +10,13 @@ EVENT_BACKWARD = 'b,1'
 EVENT_FORWARD = 'x,1'
 EVENT_RIGHT = 'a,1'
 EVENT_LIFT = 'zr,1'
+
+EVENT_DISCONNECT_RELEASE = 'r,0'
+EVENT_LEFT_RELEASE = 'y,0'
+EVENT_BACKWARD_RELEASE = 'b,0'
+EVENT_FORWARD_RELEASE = 'x,0'
+EVENT_RIGHT_RELEASE = 'a,0'
+EVENT_LIFT_RELEASE = 'zr,0'
 
 STATE_FORWARD = 1
 STATE_BACKWARD = 2
@@ -135,25 +141,25 @@ class Motors:
             self.lift_state = 'PARTIAL'
 
         if self.current_state == STATE_FORWARD:
-            if move_event and not move_event == EVENT_FORWARD:
+            if move_event and move_event == EVENT_FORWARD_RELEASE:
                 self.go_idle()
             else:
                 self.go_continue_move()
 
         elif self.current_state == STATE_BACKWARD:
-            if move_event and not move_event == EVENT_BACKWARD:
+            if move_event and move_event == EVENT_BACKWARD_RELEASE:
                 self.go_idle()
             else:
                 self.go_continue_move()
 
         elif self.current_state == STATE_LEFT:
-            if move_event and not move_event == EVENT_LEFT:
+            if move_event and move_event == EVENT_LEFT_RELEASE:
                 self.go_idle()
             else:
                 self.go_continue_move()
 
         elif self.current_state == STATE_RIGHT:
-            if move_event and not move_event == EVENT_RIGHT:
+            if move_event and move_event == EVENT_RIGHT_RELEASE:
                 self.go_idle()
             else:
                 self.go_continue_move()
