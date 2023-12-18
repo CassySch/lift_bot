@@ -99,10 +99,6 @@ class Motors:
 
     def motor_control(self):
         button_event = ""
-        motor_message = "Entering Motor control"
-        motor_tag = "motor"
-        entering = f"{motor_tag},{motor_message}"
-        #         self.client_socket.sendall(entering.encode())
         if self.is_new_data():
             button_event = self.current_data
             self.previous_data = self.current_data
@@ -113,14 +109,11 @@ class Motors:
                 self.client_socket.close()  # Close the client socket
                 return
 
-        move_event = (button_event == EVENT_FORWARD or button_event == EVENT_LEFT or button_event == EVENT_RIGHT 
-                      or button_event == EVENT_BACKWARD or button_event == EVENT_FORWARD_RELEASE 
-                      or button_event == EVENT_LEFT_RELEASE or button_event == EVENT_RIGHT_RELEASE 
+        move_event = (button_event == EVENT_FORWARD or button_event == EVENT_LEFT or button_event == EVENT_RIGHT
+                      or button_event == EVENT_BACKWARD or button_event == EVENT_FORWARD_RELEASE
+                      or button_event == EVENT_LEFT_RELEASE or button_event == EVENT_RIGHT_RELEASE
                       or button_event == EVENT_BACKWARD_RELEASE)
 
-        loop_message = "Motor Control Loop"
-        loop_tag = "loop"
-        loop = f"{loop_tag},{loop_message}"
 
         state = str(self.current_state)
         machine_state_tag = "machine"
@@ -130,9 +123,8 @@ class Motors:
         lift_state_str = self.lift_state
         lift_state_tag = "stateLf"
         lift = f"{lift_state_tag},{lift_state_str}"
+        self.client_socket.sendall(lift_state_tag.encode())
 
-        combined_data = f"{loop_tag},{loop_message};{machine_state_tag},{state};{lift_state_tag},{lift_state_str}"
-        # self.client_socket.sendall(combined_data.encode())
 
         print("Sent state")
 
