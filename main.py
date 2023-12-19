@@ -4,7 +4,7 @@ import pins
 lift_bot = Motors(500, 500)
 lift_bot.connect()
 
-if not pins.TOP.value() == 0 or not pins.BOTTOM.value() == 0:
+if not (pins.TOP.value() == 0 and pins.BOTTOM.value() == 0):
     lift_bot.lift_down()
     lift_bot.current_state = lift_bot.STATE_DOWN
 elif pins.TOP.value() == 0:
