@@ -36,7 +36,7 @@ class Motors:
 
         self.pins.PWMA.freq(freq)
         self.pins.PWMB.freq(freq)
-        
+
         self.pins.REV.value(0)
         self.pins.FWD.value(0)
         self.decoded_data = ""
@@ -186,12 +186,12 @@ class Motors:
                     self.current_state = STATE_LEFT
                 elif button_event == EVENT_LIFT:
                     # if self.decoded_data == 'zr,1':
-                    if pins.BOTTOM.value() != 0:
-                        self.lift_down()
-                        self.current_state = STATE_DOWN
-                    elif pins.TOP.value() != 0:
+                    if pins.BOTTOM.value() == 0:
                         self.lift_up()
                         self.current_state = STATE_UP
+                    elif pins.TOP.value() == 0:
+                        self.lift_down()
+                        self.current_state = STATE_DOWN
 
         elif self.current_state == STATE_UP:
             if pins.TOP.value() == 0:
