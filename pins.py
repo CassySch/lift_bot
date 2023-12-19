@@ -25,5 +25,5 @@ REV.value(0)
 FWD.value(0)
 
 #Switch pins
-TOP= machine.Pin(5, machine.Pin.IN, pull=machine.Pin.PULL_UP)
-BOTTOM= machine.Pin(23,machine.Pin.IN, pull=machine.Pin.PULL_UP)
+TOP= machine.Pin(23, machine.Pin.IN, pull=machine.Pin.PULL_UP)
+BOTTOM= machine.Pin(5,machine.Pin.IN, pull=machine.Pin.PULL_UP)
